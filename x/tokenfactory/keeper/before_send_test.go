@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -78,7 +79,7 @@ func (s *KeeperTestSuite) TestBeforeSendHook() {
 			s.Require().Equal(denoms, []string{denom})
 
 			for _, sendTc := range tc.sendMsgs {
-				_, err := s.bankMsgServer.Send(s.Ctx, sendTc.msg(denom))
+				_, err := s.bankMsgServer.Send(s.Ctx.WithGasMeter(storetypes.NewGasMeter(600000)), sendTc.msg(denom))
 				if sendTc.expectPass {
 					s.Require().NoError(err, "test: %v", sendTc.desc)
 				} else {
